@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Save-to-Learn Pilot Cost Calculator</title>
+  <style>
+    :root{
+      --navy:#12284a;
+      --rust:#c65a2e;
+      --ink:#223047;
+      --muted:#667085;
+      --line:#d9dee7;
+      --bg:#f7f4ef;
+      --card:#ffffff;
+      --soft-blue:#eef4fb;
+      --soft-green:#eef6ef;
+      --soft-peach:#fbf1eb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.35;
+    }
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:32px 22px 60px;
+    }
+    .eyebrow{
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    h1{
+      margin:0;
+      font-size:56px;
+      line-height:1.02;
+      color:var(--navy);
+      font-weight:700;
+    }
+    h1 .accent{ color:var(--rust); font-style:italic; }
+    .sub{
+      font-size:22px;
+      margin:10px 0 26px;
+      color:#2a3a52;
+      font-style:italic;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:24px;
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 8px 24px rgba(18,40,74,.05);
+    }
+    .panel{
+      padding:24px;
+    }
+    .section-title{
+      margin:0 0 16px;
+      color:var(--navy);
+      font-size:30px;
+      line-height:1.1;
+    }
+    .section-title small{
+      font-size:16px;
+      color:var(--muted);
+      font-weight:400;
+      display:block;
+      margin-top:6px;
+      font-style:normal;
+    }
+    .field-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .field{
+      background:#fcfcfd;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+    .field label{
+      display:block;
+      font-size:15px;
+      color:#42526b;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    .field input, .field select{
+      width:100%;
+      border:1px solid #cdd5df;
+      border-radius:12px;
+      padding:11px 12px;
+      font-size:18px;
+      color:var(--ink);
+      background:white;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .slider-wrap{
+      padding:6px 2px 0;
+    }
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--navy);
+    }
+    .range-row{
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .big{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    .metric{
+      border-radius:18px;
+      padding:18px;
+      border:1px solid var(--line);
+    }
+    .metric h3{
+      margin:0 0 8px;
+      font-size:16px;
+      color:#4a5872;
+      font-family:Arial, Helvetica, sans-serif;
+      font-weight:700;
+    }
+    .metric .num{
+      font-size:40px;
+      line-height:1;
+      color:var(--navy);
+      font-weight:700;
+      margin-bottom:6px;
+      word-break:break-word;
+    }
+    .metric .small{
+      color:var(--muted);
+      font-size:13px;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .blue{ background:var(--soft-blue); }
+    .green{ background:var(--soft-green); }
+    .peach{ background:var(--soft-peach); }
+    .notes{
+      margin-top:18px;
+      padding:16px 18px;
+      background:#fffdf9;
+      border:1px solid #eadfce;
+      border-radius:16px;
+      color:#554938;
+      font-size:15px;
+    }
+    .notes ul{
+      margin:8px 0 0 18px;
+      padding:0;
+    }
+    .side-top{
+      padding:24px 24px 8px;
+    }
+    .mini-head{
+      color:var(--navy);
+      font-size:22px;
+      margin:0 0 8px;
+    }
+    .summary-list{
+      margin:0;
+      padding:0;
+      list-style:none;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .summary-list li{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--line);
+      font-size:15px;
+    }
+    .summary-list li:last-child{ border-bottom:none; }
+    .summary-list .val{ font-weight:700; color:var(--navy); text-align:right; }
+    .formula{
+      margin-top:16px;
+      padding:16px;
+      border-radius:16px;
+      background:#fafbfc;
+      border:1px dashed #c9d3e2;
+      font-family:Arial, Helvetica, sans-serif;
+      font-size:14px;
+      color:#445066;
+    }
+    .cta{
+      margin-top:18px;
+      background:var(--navy);
+      color:white;
+      border-radius:16px;
+      padding:18px;
+    }
+    .cta h3{
+      margin:0 0 8px;
+      font-size:20px;
+    }
+    .cta p{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      font-size:14px;
+      color:#d7e2f0;
+    }
+    .footer{
+      margin-top:22px;
+      font-size:14px;
+      color:var(--muted);
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .button-row{
+      margin-top:18px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:15px;
+      cursor:pointer;
+      font-family:Arial, Helvetica, sans-serif;
+      font-weight:700;
+    }
+    .btn-primary{ background:var(--navy); color:white; }
+    .btn-secondary{ background:#eef2f7; color:var(--navy); border:1px solid #d6deea; }
+    @media (max-width: 960px){
+      h1{font-size:42px}
+      .sub{font-size:18px}
+      .grid{grid-template-columns:1fr}
+      .field-grid, .big{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:white}
+      .wrap{padding:14px}
+      .card{box-shadow:none}
+      .button-row{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Archer Fellowship • Save-to-Learn</div>
+    <h1><span>Interactive </span><span class="accent">Pilot-Cost</span><span> Calculator</span></h1>
+    <div class="sub">Estimate the cost of a hypothetical Save-to-Learn pilot in real time.</div>
+
+    <div class="grid">
+      <div class="card panel">
+        <h2 class="section-title">Inputs <small>Adjust the pilot assumptions below.</small></h2>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="students">Students enrolled</label>
+            <input id="students" type="number" min="0" step="100" value="10000" />
+          </div>
+          <div class="field">
+            <label for="starter">Starter deposit per student ($)</label>
+            <input id="starter" type="number" min="0" step="1" value="25" />
+          </div>
+
+          <div class="field">
+            <label for="match">Maximum match per matched student ($)</label>
+            <input id="match" type="number" min="0" step="1" value="50" />
+          </div>
+          <div class="field">
+            <label for="admin">Admin cost per student ($)</label>
+            <input id="admin" type="number" min="0" step="1" value="40" />
+          </div>
+
+          <div class="field">
+            <label for="takeup">Students receiving the full match (%)</label>
+            <div class="slider-wrap">
+              <input id="takeup" type="range" min="0" max="100" step="5" value="60" />
+              <div class="range-row"><span>0%</span><strong id="takeupLabel">60%</strong><span>100%</span></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="years">Pilot length (years)</label>
+            <select id="years">
+              <option value="1">1 year</option>
+              <option value="2">2 years</option>
+              <option value="3" selected>3 years</option>
+              <option value="4">4 years</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="big">
+          <div class="metric blue">
+            <h3>Starter deposit cost</h3>
+            <div class="num" id="starterCost">$250,000</div>
+            <div class="small">Students × starter deposit</div>
+          </div>
+          <div class="metric peach">
+            <h3>Match incentive cost</h3>
+            <div class="num" id="matchCost">$300,000</div>
+            <div class="small">Matched students × max match</div>
+          </div>
+          <div class="metric green">
+            <h3>Administration cost</h3>
+            <div class="num" id="adminCost">$400,000</div>
+            <div class="small">Students × admin cost</div>
+          </div>
+          <div class="metric blue">
+            <h3>Total modeled pilot cost</h3>
+            <div class="num" id="totalCost">$950,000</div>
+            <div class="small">Before adding research or legal overhead</div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn-primary" onclick="window.print()">Print / Save PDF</button>
+          <button class="btn-secondary" onclick="resetDefaults()">Reset defaults</button>
+        </div>
+
+        <div class="notes">
+          <strong>Important:</strong> this is a scenario-planning calculator for interview discussion.
+          <ul>
+            <li>It assumes every enrolled student receives the starter deposit.</li>
+            <li>It assumes only the selected share of students receives the full match.</li>
+            <li>It does <em>not</em> include research, legal, compliance, or technology overhead.</li>
+            <li>Use it to explain trade-offs, not to claim a finalized federal budget.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="side-top">
+          <h2 class="section-title">Live output <small>Useful numbers to discuss with panelists.</small></h2>
+          <ul class="summary-list">
+            <li><span>Students enrolled</span><span class="val" id="s_students">10,000</span></li>
+            <li><span>Matched students</span><span class="val" id="s_matched">6,000</span></li>
+            <li><span>Starter deposit / student</span><span class="val" id="s_starter">$25</span></li>
+            <li><span>Maximum match / matched student</span><span class="val" id="s_match">$50</span></li>
+            <li><span>Admin cost / student</span><span class="val" id="s_admin">$40</span></li>
+            <li><span>Pilot length</span><span class="val" id="s_years">3 years</span></li>
+          </ul>
+
+          <div class="formula">
+            <strong>Core formula</strong><br><br>
+            Total modeled cost =
+            <br>
+            <strong>(Students × Starter deposit)</strong>
+            +
+            <strong>(Matched students × Maximum match)</strong>
+            +
+            <strong>(Students × Admin cost)</strong>
+            <br><br>
+            For multi-year estimates, the model multiplies the annual total by the selected number of years.
+          </div>
+
+          <div class="big" style="margin-top:18px">
+            <div class="metric peach">
+              <h3>Cost per enrolled student</h3>
+              <div class="num" id="perStudent">$95</div>
+              <div class="small">Total annual modeled cost ÷ students</div>
+            </div>
+            <div class="metric green">
+              <h3>Total pilot cost across years</h3>
+              <div class="num" id="multiYear">$2,850,000</div>
+              <div class="small">Annual total × pilot length</div>
+            </div>
+          </div>
+
+          <div class="cta">
+            <h3>How to explain it in the interview</h3>
+            <p>
+              “This calculator helps illustrate how the pilot's cost changes with enrollment,
+              incentive design, and take-up. It is not a finalized budget; it is a tool for testing
+              affordability and policy trade-offs in real time.”
+            </p>
+          </div>
+
+          <div class="footer">
+            Created for the Save-to-Learn Initiative. Best used alongside your one-page policy blueprint.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ids = ["students","starter","match","admin","takeup","years"];
+    const defaults = {
+      students: 10000,
+      starter: 25,
+      match: 50,
+      admin: 40,
+      takeup: 60,
+      years: 3
+    };
+
+    function fmtMoney(n){
+      return new Intl.NumberFormat('en-US', {style:'currency', currency:'USD', maximumFractionDigits:0}).format(n);
+    }
+    function fmtNum(n){
+      return new Intl.NumberFormat('en-US').format(n);
+    }
+
+    function update(){
+      const students = Math.max(0, Number(document.getElementById("students").value) || 0);
+      const starter = Math.max(0, Number(document.getElementById("starter").value) || 0);
+      const match = Math.max(0, Number(document.getElementById("match").value) || 0);
+      const admin = Math.max(0, Number(document.getElementById("admin").value) || 0);
+      const takeup = Math.max(0, Math.min(100, Number(document.getElementById("takeup").value) || 0));
+      const years = Math.max(1, Number(document.getElementById("years").value) || 1);
+
+      const matchedStudents = students * (takeup / 100);
+      const starterCost = students * starter;
+      const matchCost = matchedStudents * match;
+      const adminCost = students * admin;
+      const totalCost = starterCost + matchCost + adminCost;
+      const perStudent = students > 0 ? totalCost / students : 0;
+      const multiYear = totalCost * years;
+
+      document.getElementById("takeupLabel").textContent = takeup + "%";
+
+      document.getElementById("starterCost").textContent = fmtMoney(starterCost);
+      document.getElementById("matchCost").textContent = fmtMoney(matchCost);
+      document.getElementById("adminCost").textContent = fmtMoney(adminCost);
+      document.getElementById("totalCost").textContent = fmtMoney(totalCost);
+
+      document.getElementById("s_students").textContent = fmtNum(students);
+      document.getElementById("s_matched").textContent = fmtNum(Math.round(matchedStudents));
+      document.getElementById("s_starter").textContent = fmtMoney(starter);
+      document.getElementById("s_match").textContent = fmtMoney(match);
+      document.getElementById("s_admin").textContent = fmtMoney(admin);
+      document.getElementById("s_years").textContent = years + (years === 1 ? " year" : " years");
+
+      document.getElementById("perStudent").textContent = fmtMoney(perStudent);
+      document.getElementById("multiYear").textContent = fmtMoney(multiYear);
+    }
+
+    function resetDefaults(){
+      Object.keys(defaults).forEach(k => {
+        document.getElementById(k).value = defaults[k];
+      });
+      update();
+    }
+
+    ids.forEach(id => document.getElementById(id).addEventListener("input", update));
+    ids.forEach(id => document.getElementById(id).addEventListener("change", update));
+    update();
+  </script>
+</body>
+</html>
